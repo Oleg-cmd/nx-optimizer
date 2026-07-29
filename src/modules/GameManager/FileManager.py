@@ -483,9 +483,6 @@ class FileManager:
 
             log.warning(f"Creating {modName} config File Path... {ini_file_path}\n")
 
-            ini_file_directory = os.path.dirname(ini_file_path)
-            os.makedirs(ini_file_directory, exist_ok=True)
-
             log.info(f"Opening {modName} config file...")
 
             keys_list = set()
@@ -506,6 +503,11 @@ class FileManager:
                     configFile = os.path.join(ini_file_path, configName + ".ini")
                 else:
                     configFile = ini_file_path ## compatibility for old patches
+
+                # ini_file_path is a directory for per-config patches but the
+                # file itself for old "Keys" patches, so derive it from the
+                # target file rather than assuming either layout.
+                os.makedirs(os.path.dirname(configFile), exist_ok=True)
 
                 if os.path.exists(configFile):
                     config.read(configFile, encoding="utf-8")
@@ -613,11 +615,18 @@ class FileManager:
 
         def run_tasklists(tasklist):
             com = 100 // len(tasklist)
-            for task in tasklist:
-                timer(com)
-                com += com
-                task()
-                time.sleep(0.05)
+            try:
+                for task in tasklist:
+                    timer(com)
+                    com += com
+                    task()
+                    time.sleep(0.05)
+            except Exception as e:
+                # This runs on a worker thread: an escaping exception kills it
+                # silently and the progress window then hangs on screen forever.
+                superlog.exception("A task failed, aborting the remaining tasks.")
+                ProgressBar.Abort(f"{type(e).__name__}: {e}")
+                return
 
             ProgressBar.End(filemgr._manager)
 

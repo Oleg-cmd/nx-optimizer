@@ -201,6 +201,11 @@ class ModCreator:
         if patch_info is None:
             return
 
+        # Not every config section defines a resolution block; "shadows" below
+        # is already guarded the same way.
+        if "resolution" not in patch_info:
+            return
+
         try:
             resolution = Manager.UserChoices["resolution"].get()
         except Exception:

@@ -3,6 +3,7 @@ from modules.logger import *
 from modules.FrontEnd.CanvasMgr import Canvas_Create
 import ttkbootstrap as ttk
 import threading
+from tkinter import messagebox
 
 
 class ProgressBar:
@@ -37,7 +38,33 @@ class ProgressBar:
 
     @classmethod
     def Destroy(cls):
-        cls.progress_window.destroy()
+        if cls.progress_window is not None:
+            cls.progress_window.destroy()
+            cls.progress_window = None
+
+    @classmethod
+    def Abort(cls, reason: str):
+        """Tear the progress window down after a task failed.
+
+        Without this a failing task leaves the window sitting there with its
+        last message, which reads as a freeze.
+        """
+        log.error(f"ProgressBar aborted: {reason}")
+
+        # Called from the worker thread, so tearing down must never raise here
+        # or we are back to a window that hangs around with nothing running.
+        try:
+            cls.Destroy()
+        except Exception:
+            log.exception("Failed to close the progress window.")
+
+        try:
+            messagebox.showerror(
+                "NX Optimizer",
+                f"The tasks could not be completed.\n\n{reason}",
+            )
+        except Exception:
+            log.exception("Failed to show the failure dialog.")
 
     @classmethod
     def End(cls, manager):
