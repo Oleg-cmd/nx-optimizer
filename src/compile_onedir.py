@@ -87,6 +87,8 @@ if __name__ == "__main__":
     elif platform.system() == "Darwin":
         command = [
             "pyinstaller",
+            # onedir puts lib-dynload under a dot-escaped path that the frozen
+            # runtime fails to import from, so keep onefile here.
             "--onefile",
             "--windowed",
             "--noconfirm",

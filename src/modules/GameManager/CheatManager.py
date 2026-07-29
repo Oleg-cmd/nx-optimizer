@@ -269,27 +269,12 @@ class Cheats:
 
         "Create UI Elements, Backgrounds etc."
 
+        # Single opaque layer: the chrome is already baked onto the flat background.
         canvas.create_image(
             0,
             0,
             anchor="nw",
-            image=TextureMgr.Request("image.jpg"),
-            tags="background",
-        )
-
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("Legacy_BG.png"),
-            tags="overlay-1",
-        )
-
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("BG_Left_Cheats.png"),
+            image=TextureMgr.Request("cheats_static_overlay"),
             tags="overlay",
         )
 

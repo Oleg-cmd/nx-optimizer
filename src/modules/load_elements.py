@@ -9,19 +9,7 @@ def load_UI_elements(manager, canvas: ttk.Canvas):
 
     manager: Manager = manager
 
-    # Images and Effects
-    canvas.create_image(
-        0, 0, anchor="nw", image=TextureMgr.Request("image.jpg"), tags="background"
-    )
-
-    canvas.create_image(
-        0,
-        0,
-        anchor="nw",
-        image=TextureMgr.Request("Legacy_BG.png"),
-        tags="SWITCHOVERLAY",
-    )
-
+    # Single opaque layer: the chrome is already baked onto the flat background.
     canvas.create_image(
         0, 0, anchor="nw", image=TextureMgr.Request("ui_static_overlay"), tags="overlay"
     )

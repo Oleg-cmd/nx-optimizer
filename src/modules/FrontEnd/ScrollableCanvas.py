@@ -28,6 +28,12 @@ class ScrollableCanvas(ttk.Canvas):
         sb_inset: int = 6,
         **kw,
     ):
+        # imported lazily, TextureMgr pulls in CanvasMgr which reaches back here
+        from modules.FrontEnd.TextureMgr import BACKGROUND_HEX
+
+        kw.setdefault("background", BACKGROUND_HEX)
+        kw.setdefault("highlightthickness", 0)
+        kw.setdefault("borderwidth", 0)
         super().__init__(master, **kw)
 
         self._viewport = (

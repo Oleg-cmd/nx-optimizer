@@ -677,12 +677,9 @@ class Canvas_Create:
 
     @classmethod
     def Change_Background_Image(cls, canvas: ttk.Canvas, _path: str):
-        for item in cls.LoadedImages:
-            if item.path == _path:
-                canvas.itemconfig("background", image=item.object)
-                return
+        """No-op: the per-game artwork layer was replaced by a flat background.
 
-        newImage = cls.Photo_Image(image_path=_path, width=1200, height=600, blur=2)
-
-        cls.LoadedImages.append(ImageContext(_path, newImage))
-        canvas.itemconfig("background", image=newImage)
+        Kept so the game-switch path stays untouched; decoding and blurring a
+        1200x600 image per game was pure cost once nothing renders it.
+        """
+        return

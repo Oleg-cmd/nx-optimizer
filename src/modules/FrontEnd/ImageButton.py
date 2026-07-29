@@ -124,6 +124,7 @@ class ImageButton:
 
         if State == WidgetState.Enter:
             self.__IsHovering = True
+            self.__AniIndex = 1
             self._Canvas.itemconfig(self.Tag, image=self._Images[1])
 
         if State == WidgetState.Leave:
@@ -131,12 +132,24 @@ class ImageButton:
             self._Canvas.itemconfig(self.Tag, image=self._Images[0])
 
     def ActivateImage(self, State: WidgetState):
-        # log.info(f"{self.IsOn.get()}")
+        """Bound to real pointer Enter/Leave only.
+
+        Frames are driven from here rather than from ToggleImg, which is also
+        called programmatically (page switching) to paint a button as selected --
+        that must not leave an animation running forever.
+        """
+        from modules.FrontEnd.AnimationMgr import AnimationQueue
+
         if self.Type == ButtonToggle.StaticDynamic:
             if self.get() is False:
                 self.ToggleImg(State)
         else:
             self.ToggleImg(State)
+
+        if State == WidgetState.Enter:
+            AnimationQueue.Activate(self.Animation)
+        elif State == WidgetState.Leave:
+            AnimationQueue.Deactivate(self.Animation)
 
     def AddAnimationToQueue(self):
         from modules.FrontEnd.AnimationMgr import AnimationQueue
@@ -147,25 +160,17 @@ class ImageButton:
         try:
             if not self.__IsHovering:
                 return
-        
-            if not self._Images:
+
+            # index 0 is the idle frame, the hover cycle runs over 1..len-1
+            if len(self._Images) < 2:
                 return
 
-            if hasattr(self, "_last_drawn_index"):
-                if self.__AniIndex == self._last_drawn_index:
-                    return
+            if self.__AniIndex >= len(self._Images):
+                self.__AniIndex = 1
 
-            next_index = self.__AniIndex +1
-            if next_index > len(self._Images):
-                next_index = 0
+            self._Canvas.itemconfig(self.Tag, image=self._Images[self.__AniIndex])
 
-            self._Canvas.itemconfig(
-                self.Tag,
-                image=self._Images(self.__AniIndex)
-            )
-                
-            self._last_drawn_index = self.__AniIndex
-            self.__AniIndex = next_index
-        
+            self.__AniIndex += 1
+
         except Exception:
             pass
