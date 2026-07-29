@@ -25,9 +25,8 @@ jobs:
         - name: Linux
           os: ubuntu-22.04
           artifactsPath: ./src/dist/*.AppImage
-        - name: MacOS Intel
-          os: macos-13
-          artifactsPath: ./src/dist/*.zip
+        # MacOS Intel is gone: macos-13 was the last x86_64 runner GitHub
+        # offered, and jobs targeting it now sit in the queue forever.
         - name: MacOS Silicon
           os: macos-latest
           artifactsPath: ./src/dist/*.zip
@@ -41,6 +40,14 @@ jobs:
       uses: actions/setup-python@v3
       with:
         python-version: "3.11.3"
+      if: ${{ !startsWith(matrix.name, 'MacOS') }}
+    # The setup-python interpreter ships a Tk whose widgets stop responding to
+    # clicks in the frozen .app. Homebrew's python-tk builds a working one.
+    - name: Set up Homebrew Python with Tk (MacOS)
+      run: |
+        brew install python@3.11 python-tk@3.11
+        echo "/opt/homebrew/opt/python@3.11/libexec/bin" >> $GITHUB_PATH
+      if: ${{ startsWith(matrix.name, 'MacOS') }}
     - name: Install dependencies
       run: |
         cd ./src/

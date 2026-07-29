@@ -67,7 +67,7 @@ class Manager:
         Game_Manager.LoadPatches()
         FileManager.Initialize(window, Manager)
         TextureMgr.Initialize()  # load all images.
-        AnimationQueue.Initialize()
+        AnimationQueue.Initialize(window)
         Manager.patches = Game_Manager.GetPatches()
         
         # Emulator Scaling
@@ -339,8 +339,15 @@ class Manager:
         Manager.UserChoices = {}
 
         # Create Canvas
+        from modules.FrontEnd.TextureMgr import BACKGROUND_HEX
+
         Manager.maincanvas = ttk.Canvas(
-            Manager._window, width=scale(1200), height=scale(600)
+            Manager._window,
+            width=scale(1200),
+            height=scale(600),
+            background=BACKGROUND_HEX,
+            highlightthickness=0,
+            borderwidth=0,
         )
 
         canvas = Manager.maincanvas

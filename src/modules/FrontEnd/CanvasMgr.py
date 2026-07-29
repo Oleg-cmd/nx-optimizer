@@ -1,5 +1,5 @@
 from modules.FrontEnd.ImageButton import *
-from PIL import Image, ImageTk, ImageFilter, ImageOps
+from PIL import Image as PILImage, ImageTk, ImageFilter, ImageOps
 from idlelib.tooltip import Hovertip
 from tkinter import *
 from configuration.settings import *
@@ -259,7 +259,8 @@ class Canvas_Create:
             master=master,
             from_=scale_from,
             to=scale_to,
-            command=lambda e: custom_command(),
+            # the variable trace above already fires custom_command; binding it
+            # here too ran it again for every pixel of the drag
             length=width,
             style=style,
             variable=new_variable,
@@ -698,7 +699,6 @@ class Canvas_Create:
         x += canvas.winfo_rootx()
         y += canvas.winfo_rooty()
 
-        master.after(50)
         cls.tooltip = Tk.Toplevel(master=master)
         cls.tooltip.wm_overrideredirect(True)
         cls.tooltip.geometry(f"+{x + scale(20)}+{y + scale(25)}")
@@ -770,7 +770,7 @@ class Canvas_Create:
     ) -> PhotoImage:
 
         UI_path = cls.get_UI_path(image_path)
-        image = ttk.Image.open(UI_path)
+        image = PILImage.open(UI_path)
         if isinstance(img_scale, int) or isinstance(img_scale, float):
             width = int(width * img_scale)
             height = int(height * img_scale)
@@ -790,12 +790,9 @@ class Canvas_Create:
 
     @classmethod
     def Change_Background_Image(cls, canvas: ttk.Canvas, _path: str):
-        for item in cls.LoadedImages:
-            if item.path == _path:
-                canvas.itemconfig("background", image=item.object)
-                return
+        """No-op: the per-game artwork layer was replaced by a flat background.
 
-        newImage = cls.Photo_Image(image_path=_path, width=1200, height=600, blur=2)
-
-        cls.LoadedImages.append(ImageContext(_path, newImage))
-        canvas.itemconfig("background", image=newImage)
+        Kept so the game-switch path stays untouched; decoding and blurring a
+        1200x600 image per game was pure cost once nothing renders it.
+        """
+        return

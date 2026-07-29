@@ -74,7 +74,16 @@ class Cheats:
             raise "Cheat Canvas is Already Created"
 
         # Create Canvas
-        canvas = ttk.Canvas(manager._window, width=scale(1200), height=scale(600))
+        from modules.FrontEnd.TextureMgr import BACKGROUND_HEX
+
+        canvas = ttk.Canvas(
+            manager._window,
+            width=scale(1200),
+            height=scale(600),
+            background=BACKGROUND_HEX,
+            highlightthickness=0,
+            borderwidth=0,
+        )
 
         canvas.pack(expand=1, fill="both")
         manager.cheatcanvas = canvas
@@ -252,27 +261,12 @@ class Cheats:
 
         "Create UI Elements, Backgrounds etc."
 
+        # Single opaque layer: the chrome is already baked onto the flat background.
         canvas.create_image(
             0,
             0,
             anchor="nw",
-            image=TextureMgr.Request("image.jpg"),
-            tags="background",
-        )
-
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("Legacy_BG.png"),
-            tags="overlay-1",
-        )
-
-        canvas.create_image(
-            0,
-            0,
-            anchor="nw",
-            image=TextureMgr.Request("BG_Left_Cheats.png"),
+            image=TextureMgr.Request("cheats_static_overlay"),
             tags="overlay",
         )
 

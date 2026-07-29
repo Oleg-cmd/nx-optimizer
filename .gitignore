@@ -34,3 +34,4 @@ venv
 src/run.dist.zip
 /src/run.dist
 src/TOTKOptimizer.ini
+.venv
